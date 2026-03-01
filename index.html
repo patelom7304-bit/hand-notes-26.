@@ -8,7 +8,7 @@
 <style>
 body{
 margin:0;
-font-family:Arial, sans-serif;
+font-family:Arial;
 background:#f4f6fb;
 }
 
@@ -17,10 +17,6 @@ background:#2563eb;
 color:white;
 padding:20px;
 text-align:center;
-}
-
-header h1{
-margin:0;
 }
 
 .products{
@@ -34,7 +30,7 @@ padding:12px;
 background:white;
 border-radius:12px;
 padding:10px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
 .card img{
@@ -42,10 +38,6 @@ width:100%;
 height:120px;
 object-fit:cover;
 border-radius:8px;
-}
-
-.card h3{
-font-size:14px;
 }
 
 .price{
@@ -59,8 +51,8 @@ color:white;
 border:none;
 padding:8px;
 border-radius:6px;
-cursor:pointer;
 width:100%;
+cursor:pointer;
 }
 
 .cart-btn{
@@ -74,16 +66,6 @@ border-radius:50%;
 cursor:pointer;
 }
 
-.cart-count{
-background:red;
-color:white;
-padding:2px 6px;
-border-radius:50%;
-font-size:12px;
-position:absolute;
-margin-left:-5px;
-}
-
 .cart-modal{
 position:fixed;
 top:0;
@@ -92,8 +74,8 @@ right:0;
 bottom:0;
 background:rgba(0,0,0,0.5);
 display:none;
-justify-content:center;
 align-items:center;
+justify-content:center;
 }
 
 .cart-box{
@@ -102,21 +84,12 @@ padding:20px;
 width:90%;
 max-width:450px;
 border-radius:10px;
-max-height:90vh;
-overflow:auto;
 }
 
 input,textarea{
 width:100%;
 padding:8px;
-margin-top:8px;
-margin-bottom:8px;
-border:1px solid #ccc;
-border-radius:6px;
-}
-
-.submit-btn{
-background:green;
+margin:6px 0;
 }
 </style>
 </head>
@@ -126,35 +99,27 @@ background:green;
 <header>
 <h1>HAND NOTES 26</h1>
 <p>Focus on Learning, Leave the Writing to Me!</p>
-<p>Gandhinagar | WhatsApp 73836 36557</p>
+<p>WhatsApp 73836 36557</p>
 </header>
 
 <div class="products" id="products"></div>
 
-<div class="cart-btn" onclick="openCart()">
-🛒 <span class="cart-count" id="cartCount">0</span>
-</div>
+<div class="cart-btn" onclick="openCart()">🛒 <span id="count">0</span></div>
 
 <div class="cart-modal" id="cartModal">
 <div class="cart-box">
 
 <h2>Your Cart</h2>
 <div id="cartItems"></div>
+<h3>Total ₹ <span id="total">0</span></h3>
 
-<h3>Total ₹ <span id="cartTotal">0</span></h3>
-
-<form id="orderForm"
-action="https://formspree.io/f/YOUR_FORM_ID"
-method="POST">
-
-<input name="Customer Name" placeholder="Your Name" required>
-<input name="Phone Number" placeholder="Phone Number" required>
+<form action="https://formspree.io/f/mreavqpb" method="POST">
+<input name="Name" placeholder="Your Name" required>
+<input name="Phone" placeholder="Phone Number" required>
 <input type="email" name="Email" placeholder="Email Address" required>
-<textarea name="Instructions" placeholder="Special instructions"></textarea>
+<textarea name="Order Details" id="orderData"></textarea>
 
-<input type="hidden" name="Order Summary" id="orderSummary">
-
-<button class="submit-btn">Place Order</button>
+<button>Place Order</button>
 </form>
 
 <br>
@@ -166,148 +131,62 @@ method="POST">
 <script>
 const products=[
 {
-name:"Assignment Writing (Per Page)",
+name:"Assignment Writing",
 price:7,
-img:"https://i.ibb.co/GvGysHqX/Whats-App-Image-2026-03-01-at-10-30-27-AM.jpg",
-desc:"Best handwriting service"
+img:"https://i.ibb.co/GvGysHqX/Whats-App-Image-2026-03-01-at-10-30-27-AM.jpg"
 },
 {
 name:"Assignment With Drawing",
 price:9,
-img:"https://i.ibb.co/JjwFR84M/Whats-App-Image-2026-03-01-at-10-30-27-AM-1.jpg",
-desc:"Diagram included"
-},
-{
-name:"Complete Assignment File",
-price:120,
-img:"https://i.ibb.co/GvGysHqX/Whats-App-Image-2026-03-01-at-10-30-27-AM.jpg",
-desc:"Ready to submit"
-},
-{
-name:"Project Writing",
-price:200,
-img:"https://i.ibb.co/GvGysHqX/Whats-App-Image-2026-03-01-at-10-30-27-AM.jpg",
-desc:"Full project work"
-},
-{
-name:"Notes Writing",
-price:60,
-img:"https://i.ibb.co/GvGysHqX/Whats-App-Image-2026-03-01-at-10-30-27-AM.jpg",
-desc:"Neat notes"
-},
-{
-name:"Homework Writing",
-price:50,
-img:"https://i.ibb.co/GvGysHqX/Whats-App-Image-2026-03-01-at-10-30-27-AM.jpg",
-desc:"School homework"
-},
-{
-name:"Practical File",
-price:150,
-img:"https://i.ibb.co/JjwFR84M/Whats-App-Image-2026-03-01-at-10-30-27-AM-1.jpg",
-desc:"Practical work"
-},
-{
-name:"Urgent Assignment",
-price:100,
-img:"https://i.ibb.co/GvGysHqX/Whats-App-Image-2026-03-01-at-10-30-27-AM.jpg",
-desc:"Fast delivery"
+img:"https://i.ibb.co/JjwFR84M/Whats-App-Image-2026-03-01-at-10-30-27-AM-1.jpg"
 }
 ];
 
-let cart=JSON.parse(localStorage.getItem("cart"))||[];
+let cart=[];
 
-function renderProducts(){
-const container=document.getElementById("products");
-container.innerHTML="";
+function render(){
+let html="";
 products.forEach((p,i)=>{
-container.innerHTML+=`
+html+=`
 <div class="card">
-<img loading="lazy" src="${p.img}">
+<img src="${p.img}">
 <h3>${p.name}</h3>
-<p>${p.desc}</p>
 <div class="price">₹ ${p.price}</div>
-<button onclick="addToCart(${i})">Add to Cart</button>
+<button onclick="add(${i})">Add</button>
 </div>`;
 });
+document.getElementById("products").innerHTML=html;
 }
 
-function addToCart(i){
-let item=cart.find(x=>x.name===products[i].name);
-if(item) item.qty++;
-else cart.push({...products[i],qty:1});
-saveCart();
+function add(i){
+cart.push(products[i]);
+update();
 }
 
-function saveCart(){
-localStorage.setItem("cart",JSON.stringify(cart));
-updateCart();
-}
-
-function updateCart(){
-document.getElementById("cartCount").innerText=
-cart.reduce((a,b)=>a+b.qty,0);
+function update(){
+document.getElementById("count").innerText=cart.length;
 }
 
 function openCart(){
 document.getElementById("cartModal").style.display="flex";
-renderCart();
+let list="";
+let total=0;
+
+cart.forEach(p=>{
+list+=p.name+" - ₹"+p.price+"<br>";
+total+=p.price;
+});
+
+document.getElementById("cartItems").innerHTML=list;
+document.getElementById("total").innerText=total;
+document.getElementById("orderData").value=list+" Total ₹"+total;
 }
 
 function closeCart(){
 document.getElementById("cartModal").style.display="none";
 }
 
-function renderCart(){
-let box=document.getElementById("cartItems");
-box.innerHTML="";
-let total=0;
-let summary="";
-
-cart.forEach((item,i)=>{
-let sub=item.price*item.qty;
-total+=sub;
-
-summary+=`${item.name} | Qty:${item.qty} | ₹${sub}\n`;
-
-box.innerHTML+=`
-<div>
-${item.name} (₹${item.price}) x ${item.qty}
-<button onclick="changeQty(${i},1)">+</button>
-<button onclick="changeQty(${i},-1)">-</button>
-<button onclick="removeItem(${i})">Remove</button>
-</div>
-`;
-});
-
-document.getElementById("cartTotal").innerText=total;
-summary+=`Total ₹ ${total}`;
-document.getElementById("orderSummary").value=summary;
-}
-
-function changeQty(i,val){
-cart[i].qty+=val;
-if(cart[i].qty<=0) cart.splice(i,1);
-saveCart();
-renderCart();
-}
-
-function removeItem(i){
-cart.splice(i,1);
-saveCart();
-renderCart();
-}
-
-document.getElementById("orderForm").addEventListener("submit",()=>{
-localStorage.removeItem("cart");
-cart=[];
-setTimeout(()=>{
-alert("Order placed! We will contact you on WhatsApp.");
-},500);
-});
-
-renderProducts();
-updateCart();
+render();
 </script>
 
 </body>
